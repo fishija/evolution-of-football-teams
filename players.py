@@ -56,12 +56,12 @@ def save_to_excel(name_of_team, name_of_excel, matches_list):
                 
                 workbook_row+=1
         except:
-            worbook.save(f'{name_of_excel}.xlsx')
+            worbook.save(f'{name_of_excel}.csv')
 
             worbook.close()
             quit()
 
-    worbook.save(f'{name_of_excel}.xlsx')
+    worbook.save(f'{name_of_excel}.csv')
     worbook.close()
 
 

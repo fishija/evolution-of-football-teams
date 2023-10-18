@@ -1,3 +1,4 @@
+# year, competittion, ? , date, ?, adversarial team, goals, goals, reference for URL , team, ?,?,?,?, competition round, round nb, ? ,?,season
 barcelona_matches=[
     [1970,"1a","","12/09/1970",0,"Atlético de Bilbao",1,1,26400,"Barcelona",6,1,0,600183,"Round 1","1",0,0,"1970-71"],
     [1970,"FER","","16/09/1970",0,"Katowice",0,1,470002,"Barcelona",10329,1,1,611207,"Round 1 (first leg)","R1-1",0,0,"1970-71"],

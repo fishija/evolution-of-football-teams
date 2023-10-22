@@ -39,22 +39,35 @@ def save_to_excel(name_of_team, name_of_excel, matches_list):
     
     worbook = Workbook()
     sheet=worbook.active
-    workbook_row=1
+    sheet.cell(row=1, column=1, value='WinOrLost')
+    sheet.cell(row=1, column=2, value='year')
+    sheet.cell(row=1, column=3, value='team1')
+    sheet.cell(row=1, column=4, value='team2')
+    sheet.cell(row=1, column=5, value='score')
+    sheet.cell(row=1, column=6, value='players')
+
+
+    workbook_row=2
 
     for list_row in matches_list:
         try:
+            # list_row[5] = first team, list_row[6] = score of first team, list_row[7] = score of second team, list_row[9]=second team, list_row[8]=URL ending
             if (list_row[5]== name_of_team and (list_row[6]>list_row[7])) or (list_row[9]==name_of_team and (list_row[7]>list_row[6])):
-                players=search_for_players(list_row[8], list_row[5], list_row[9], name_of_team)
+                sheet.cell(row=workbook_row, column=1, value=1)
+            else:
+                sheet.cell(row=workbook_row, column=1, value=0)
 
-                sheet.cell(row=workbook_row, column=1, value=list_row[0])
-                sheet.cell(row=workbook_row, column=2, value=list_row[5])
-                sheet.cell(row=workbook_row, column=3, value=list_row[9])
-                sheet.cell(row=workbook_row, column=4, value=f'{list_row[6]}-{list_row[7]}')
-                print(list_row[0])
-                for col, name in enumerate(players, start=5):
-                    sheet.cell(row=workbook_row, column=col, value=name)
+            players=search_for_players(list_row[8], list_row[5], list_row[9], name_of_team)
+
+            sheet.cell(row=workbook_row, column=2, value=list_row[0])
+            sheet.cell(row=workbook_row, column=3, value=list_row[5])
+            sheet.cell(row=workbook_row, column=4, value=list_row[9])
+            sheet.cell(row=workbook_row, column=5, value=f'{list_row[6]}-{list_row[7]}')
+            print(list_row[0])
+            for col, name in enumerate(players, start=6):
+                sheet.cell(row=workbook_row, column=col, value=name)
                 
-                workbook_row+=1
+            workbook_row+=1
         except:
             worbook.save(f'{name_of_excel}.csv')
 

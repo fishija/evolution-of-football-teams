@@ -97,18 +97,19 @@ def save_to_excel(name_of_team, name_of_excel, matches_list):
             print(list_row[0])
             for col, name in enumerate(players, start=6):
                 sheet.cell(row=workbook_row, column=col, value=name)
+                worbook.save(f"./Football_team_evolution_csv/{name_of_excel}.csv")
 
             workbook_row += 1
         except:
-            worbook.save(f"../Football_team_evolution_csv/{name_of_excel}.csv")
+            worbook.save(f"./Football_team_evolution_csv/{name_of_excel}.csv")
 
             worbook.close()
             quit()
 
-    worbook.save(f"../Football_team_evolution_csv/{name_of_excel}.csv")
+    worbook.save(f"./Football_team_evolution_csv/{name_of_excel}.csv")
     worbook.close()
 
 
-save_to_excel("Real Madrid", "Real_Madrid_players", real_madrid_matches)
-save_to_excel("Barcelona", "Barcelona_players", barcelona_matches)
+#save_to_excel("Real Madrid", "Real_Madrid_players", real_madrid_matches)
+#save_to_excel("Barcelona", "Barcelona_players", barcelona_matches)
 save_to_excel("Atlético de Madrid", "Atlético_de_Madrid", atlético_de_madrid_matches)

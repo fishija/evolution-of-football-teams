@@ -11,10 +11,29 @@ import java.util.List;
 
 public class FootballTeamEvolutionGraph {
     public static void main(String[] args) {
+
+        String defaultStyleSheet = "graph {padding:40px;fill-color:white;}"
+            + " node {shape:box; fill-color:black; size:10px;}"
+            + " edge {fill-color:grey;size:1px;}";
+
+        String nodeLabelStyle = " text-alignment: under; "
+            + "text-color: white; "
+            + "text-style: bold; "
+            + "text-background-mode: rounded-box; "
+            + "text-background-color: #222C; "
+            + "text-padding: 1px; text-offset: 0px, 2px;";
+
+        String edgeLabelStyle = " text-alignment: under; "
+            + "text-style: bold; "
+            + "text-padding: 1px; text-offset: 0px, 2px;";
+
+
         List<String[]> footballData = readFootballDataFromCSV("football_data.csv");
 
         // Create GraphStream graph
         Graph graph = new SingleGraph("FootballTeamEvolutionGraph");
+
+        graph.setAttribute("ui.stylesheet",defaultStyleSheet);
 
         // Add nodes to the graph with player names as labels
         String[] columnNames = footballData.get(0);
@@ -22,6 +41,7 @@ public class FootballTeamEvolutionGraph {
             String playerName = columnNames[i];
             Node node = graph.addNode(playerName);
             node.setAttribute("ui.label", playerName);
+            node.setAttribute("ui.style", nodeLabelStyle);
         }
 
         // Add edges to the graph
@@ -39,6 +59,7 @@ public class FootballTeamEvolutionGraph {
                 if (gamesPlayedTogether > 0) {
                     Edge edge = graph.addEdge(player1 + "-" + player2, node1, node2);
                     edge.setAttribute("ui.label", String.valueOf(gamesPlayedTogether));
+                    edge.setAttribute("ui.style", edgeLabelStyle);
                 }
             }
         }

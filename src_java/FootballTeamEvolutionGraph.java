@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 public class FootballTeamEvolutionGraph {
     public static void main(String[] args) {
@@ -39,20 +40,50 @@ public class FootballTeamEvolutionGraph {
         // Display the graph
         Viewer viewer = graph.display(true);
 
-
         List<String[]> wholeFootballData = readFootballDataFromCSV("Graph_data_Barcelona_players.csv");
 
+        String[] prevColumnNames = new String[0];
 
         for (var year = 1970; year < 2023; year++){
 
-            System.out.println("Year: " + year + ", Max Year: " + (year));
+            System.out.println("Year: " + year + ", Max Year: " + (year + 0));
 
-            List<String[]> footballData = findPlayersPerYear(wholeFootballData, year, year);
+            List<String[]> footballData = findPlayersPerYear(wholeFootballData, year, year + 0);
 
-            // Add nodes to the graph with player names as labels
+            // Find current players names/labels
             String[] columnNames = footballData.get(0);
-            for (int i = 1; i < columnNames.length; i++) {
+
+            // Remove useless Nodes/players
+            for (int i = 0; i < prevColumnNames.length; i++){
+                String playerName = prevColumnNames[i];
+
+                if (Arrays.asList(columnNames).contains(playerName)) {
+                    continue;
+                }
+
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                graph.removeNode(playerName);
+            }
+
+            // Add nodes to the graph with player names as labels if not in previous generation
+            for (int i = 0; i < columnNames.length; i++) {
                 String playerName = columnNames[i];
+
+                if (Arrays.asList(prevColumnNames).contains(playerName)) {
+                    continue;
+                }
+
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
                 Node node = graph.addNode(playerName);
                 node.setAttribute("ui.label", playerName);
                 node.setAttribute("ui.style", nodeLabelStyle);
@@ -61,9 +92,15 @@ public class FootballTeamEvolutionGraph {
             footballData = findWonPlayers(footballData);
 
             // Add edges to the graph
-            for (int i = 1; i < columnNames.length; i++) {
+            for (int i = 0; i < columnNames.length; i++) {
                 String player1 = columnNames[i];
                 Node node1 = graph.getNode(player1);
+
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
                 for (int j = i + 1; j < columnNames.length; j++) {
                     String player2 = columnNames[j];
@@ -71,14 +108,25 @@ public class FootballTeamEvolutionGraph {
 
                     int gamesPlayedTogether = calculateGamesPlayedTogether(footballData, i, j);
 
-                    // Add an edge between player1 and player2 only if gamesPlayedTogether is not 0
-                    if (gamesPlayedTogether > 0) {
-                        Edge edge = graph.addEdge(player1 + "-" + player2, node1, node2);
-                        edge.setAttribute("ui.label", String.valueOf(gamesPlayedTogether));
-                        edge.setAttribute("ui.style", edgeLabelStyle);
+                    // Check if the edge already exists
+                    Edge existingEdge = graph.getEdge(player1 + "-" + player2);
+
+                    if (existingEdge != null) {
+                        // Edge already exists, modify it
+                        existingEdge.setAttribute("ui.label", String.valueOf(gamesPlayedTogether));
+                        existingEdge.setAttribute("ui.style", edgeLabelStyle);
+                    } else {
+                        // Edge doesn't exist, add a new one
+                        if (gamesPlayedTogether > 0) {
+                            Edge newEdge = graph.addEdge(player1 + "-" + player2, node1, node2);
+                            newEdge.setAttribute("ui.label", String.valueOf(gamesPlayedTogether));
+                            newEdge.setAttribute("ui.style", edgeLabelStyle);
+                        }
                     }
                 }
             }
+
+            prevColumnNames = columnNames;
 
             // Pause for a short duration to observe the changes
             try {
@@ -86,9 +134,6 @@ public class FootballTeamEvolutionGraph {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-            graph.clear();
-
         }
 
         viewer.close();

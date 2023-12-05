@@ -43,9 +43,11 @@ public class FootballTeamEvolutionGraph {
         List<String[]> wholeFootballData = readFootballDataFromCSV("Graph_data_Barcelona_players.csv");
 
 
-        for (var year = 1970; year < 2022; year++){
+        for (var year = 1970; year < 2018; year++){
 
-            List<String[]> footballData = findPlayersPerYear(wholeFootballData, year);
+            System.out.println("Year: " + year + ", Max Year: " + (year+4));
+
+            List<String[]> footballData = findPlayersPerYear(wholeFootballData, year, year+4);
 
             // Add nodes to the graph with player names as labels
             String[] columnNames = footballData.get(0);
@@ -75,7 +77,7 @@ public class FootballTeamEvolutionGraph {
                     }
                 }
             }
-            
+
             // Pause for a short duration to observe the changes
             try {
                 Thread.sleep(2000);
@@ -84,7 +86,7 @@ public class FootballTeamEvolutionGraph {
             }
 
             graph.clear();
-            
+
         }
 
         viewer.close();
@@ -121,7 +123,7 @@ public class FootballTeamEvolutionGraph {
         return gamesPlayedTogether;
     }
 
-    private static List<String[]> findPlayersPerYear(List<String[]> wholeFootballData, int selectedYear){
+    private static List<String[]> findPlayersPerYear(List<String[]> wholeFootballData, int selectedYear, int selectedMaxYear){
         List<String[]> tempFootballData = new ArrayList<>();
 
         // remove rows with year (value[0]) != selectedYear
@@ -132,13 +134,14 @@ public class FootballTeamEvolutionGraph {
                 tempFootballData.add(row);
             }
 
-            else if (Integer.parseInt(row[0]) == selectedYear){
-                tempFootballData.add(row);
-            }
-
-            else if (Integer.parseInt(row[0]) > selectedYear){
-                break;
-            }
+            else if (Integer.parseInt(row[0]) >= selectedYear){
+                if (Integer.parseInt(row[0]) <= selectedMaxYear){
+                    tempFootballData.add(row);
+                }
+                else if (Integer.parseInt(row[0]) > selectedMaxYear){
+                    break;
+                }
+            }            
         }
 
         // removeColumnsWithAllZeros
@@ -172,8 +175,6 @@ public class FootballTeamEvolutionGraph {
                 columnsToRemove.add(col);
             }
         }
-    
-        System.out.print(columnsToRemove);
 
         // Remove columns with all zeros
         List<String[]> updatedFootballData = new ArrayList<>();

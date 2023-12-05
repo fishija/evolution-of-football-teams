@@ -43,11 +43,11 @@ public class FootballTeamEvolutionGraph {
         List<String[]> wholeFootballData = readFootballDataFromCSV("Graph_data_Barcelona_players.csv");
 
 
-        for (var year = 1970; year < 2018; year++){
+        for (var year = 1970; year < 2023; year++){
 
-            System.out.println("Year: " + year + ", Max Year: " + (year+4));
+            System.out.println("Year: " + year + ", Max Year: " + (year));
 
-            List<String[]> footballData = findPlayersPerYear(wholeFootballData, year, year+4);
+            List<String[]> footballData = findPlayersPerYear(wholeFootballData, year, year);
 
             // Add nodes to the graph with player names as labels
             String[] columnNames = footballData.get(0);
@@ -57,6 +57,8 @@ public class FootballTeamEvolutionGraph {
                 node.setAttribute("ui.label", playerName);
                 node.setAttribute("ui.style", nodeLabelStyle);
             }
+
+            footballData = findWonPlayers(footballData);
 
             // Add edges to the graph
             for (int i = 1; i < columnNames.length; i++) {
@@ -123,10 +125,10 @@ public class FootballTeamEvolutionGraph {
         return gamesPlayedTogether;
     }
 
-    private static List<String[]> findPlayersPerYear(List<String[]> wholeFootballData, int selectedYear, int selectedMaxYear){
+    private static List<String[]> findPlayersPerYear(List<String[]> wholeFootballData, int selectedMinYear, int selectedMaxYear){
         List<String[]> tempFootballData = new ArrayList<>();
 
-        // remove rows with year (value[0]) != selectedYear
+        // remove rows with year (value[0]) != selectedMinYear
         for (int rowIndex = 0; rowIndex < wholeFootballData.size(); rowIndex++) {
             String[] row = wholeFootballData.get(rowIndex);
 
@@ -134,7 +136,7 @@ public class FootballTeamEvolutionGraph {
                 tempFootballData.add(row);
             }
 
-            else if (Integer.parseInt(row[0]) >= selectedYear){
+            else if (Integer.parseInt(row[0]) >= selectedMinYear){
                 if (Integer.parseInt(row[0]) <= selectedMaxYear){
                     tempFootballData.add(row);
                 }
@@ -159,7 +161,7 @@ public class FootballTeamEvolutionGraph {
     
         int numColumns = footballData.get(0).length;
     
-        for (int col = 1; col < numColumns; col++) {
+        for (int col = 2; col < numColumns; col++) {
             boolean allZeros = true;
 
             for (int rowIndex = 1; rowIndex < footballData.size(); rowIndex++) {
@@ -180,7 +182,7 @@ public class FootballTeamEvolutionGraph {
         List<String[]> updatedFootballData = new ArrayList<>();
         for (String[] row : footballData) {
             List<String> updatedRow = new ArrayList<>();
-            for (int col = 0; col < numColumns; col++) {
+            for (int col = 2; col < numColumns; col++) {
                 if (!columnsToRemove.contains(col)) {
                     updatedRow.add(row[col]);
                 }
@@ -190,4 +192,21 @@ public class FootballTeamEvolutionGraph {
 
         return updatedFootballData;
     }
+
+    private static List<String[]> findWonPlayers(List<String[]> footballData) {
+        List<String[]> tempFootballData = new ArrayList<>();
+
+        tempFootballData.add(footballData.get(0));
+
+        for (int rowIndex = 1; rowIndex < footballData.size(); rowIndex++) {
+            String[] row = footballData.get(rowIndex);
+    
+            if ("1".equals(row[1])) {
+                tempFootballData.add(row);
+            }
+        }
+
+        return tempFootballData;
+    }
+    
 }

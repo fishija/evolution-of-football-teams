@@ -9,9 +9,6 @@ from matches_data import (
     leganes_matches,
     mirandes_matches,
     girona,
-    
-
-
 )
 from bs4 import BeautifulSoup
 from openpyxl import Workbook
@@ -33,13 +30,15 @@ def search_for_players(ending_of_url, team1, team2, team_for_project):
             for row in rows:
                 columns = row.find_all("td")
                 players_pseudonim = columns[3].text
-                print(players_pseudonim)
                 if players_pseudonim != "" and team1 == team_for_project:
                     if section_number == 0 or section_number == 2:
                         link = columns[3].find("a")  # Find the anchor tag in the column
-                        player_link = link.get(
-                            "href"
-                        )  # Get the href attribute of the anchor tag
+                        try:
+                            player_link = link.get(
+                                "href"
+                            )  # Get the href attribute of the anchor tag
+                        except:
+                            continue
                         url_for_one_player = f"https://www.bdfutbol.com/en/{player_link}"  # Construct the complete URL
                         response_for_players_name = requests.get(url_for_one_player)
                         soup_for_players = BeautifulSoup(
@@ -55,9 +54,12 @@ def search_for_players(ending_of_url, team1, team2, team_for_project):
                 elif players_pseudonim != "" and team2 == team_for_project:
                     if section_number == 1 or section_number == 3:
                         link = columns[3].find("a")  # Find the anchor tag in the column
-                        player_link = link.get(
-                            "href"
-                        )  # Get the href attribute of the anchor tag
+                        try:
+                            player_link = link.get(
+                                "href"
+                            )  # Get the href attribute of the anchor tag
+                        except:
+                            continue
                         url_for_one_player = f"https://www.bdfutbol.com/en/{player_link}"  # Construct the complete URL
                         response_for_players_name = requests.get(url_for_one_player)
                         soup_for_players = BeautifulSoup(
@@ -87,34 +89,35 @@ def save_to_excel(name_of_team, name_of_excel, matches_list):
     workbook_row = 2
 
     for list_row in matches_list:
-        if list_row[0]==2009:
-            try:
-                # list_row[5] = first team, list_row[6] = score of first team, list_row[7] = score of second team, list_row[9]=second team, list_row[8]=URL ending
-                if (list_row[5] == name_of_team and (list_row[6] > list_row[7])) or (
-                    list_row[9] == name_of_team and (list_row[7] > list_row[6])
-                ):
-                    sheet.cell(row=workbook_row, column=1, value=1)
-                else:
-                    sheet.cell(row=workbook_row, column=1, value=0)
+        try:
+            # list_row[5] = first team, list_row[6] = score of first team, list_row[7] = score of second team, list_row[9]=second team, list_row[8]=URL ending
+            if (list_row[5] == name_of_team and (list_row[6] > list_row[7])) or (
+                list_row[9] == name_of_team and (list_row[7] > list_row[6])
+            ):
+                sheet.cell(row=workbook_row, column=1, value=1)
+            else:
+                sheet.cell(row=workbook_row, column=1, value=0)
 
-                players = search_for_players(
-                    list_row[8], list_row[5], list_row[9], name_of_team
-                )
-                sheet.cell(row=workbook_row, column=2, value=list_row[0])
-                sheet.cell(row=workbook_row, column=3, value=list_row[5])
-                sheet.cell(row=workbook_row, column=4, value=list_row[9])
-                sheet.cell(row=workbook_row, column=5, value=f"{list_row[6]}-{list_row[7]}")
-                print(list_row[0])
-                for col, name in enumerate(players, start=6):
-                    sheet.cell(row=workbook_row, column=col, value=name)
-                    worbook.save(f"./Football_team_evolution_csv/{name_of_excel}.csv")
-
-                workbook_row += 1
-            except:
+            players = search_for_players(
+                list_row[8], list_row[5], list_row[9], name_of_team
+            )
+            sheet.cell(row=workbook_row, column=2, value=list_row[0])
+            sheet.cell(row=workbook_row, column=3, value=list_row[5])
+            sheet.cell(row=workbook_row, column=4, value=list_row[9])
+            sheet.cell(row=workbook_row, column=5, value=f"{list_row[6]}-{list_row[7]}")
+            print(list_row[0])
+            for col, name in enumerate(players, start=6):
+                sheet.cell(row=workbook_row, column=col, value=name)
                 worbook.save(f"./Football_team_evolution_csv/{name_of_excel}.csv")
 
-                worbook.close()
-                quit()
+            workbook_row += 1
+        except Exception as e:
+            import traceback
+            print(traceback.format_exc())
+            worbook.save(f"./Football_team_evolution_csv/{name_of_excel}.csv")
+
+            worbook.close()
+            quit()
 
     worbook.save(f"./Football_team_evolution_csv/{name_of_excel}.csv")
     worbook.close()
@@ -123,4 +126,8 @@ def save_to_excel(name_of_team, name_of_excel, matches_list):
 #save_to_excel("Real Madrid", "Real_Madrid_players", real_madrid_matches)
 #save_to_excel("Barcelona", "Barcelona_players", barcelona_matches)
 #save_to_excel("Atlético de Madrid", "Atlético_de_Madrid", atlético_de_madrid_matches)
-save_to_excel("Girona", "rl", girona)
+# save_to_excel("Girona", "rl", girona)
+save_to_excel("Algeciras", "Algeciras Players", algeciras_matches)
+# save_to_excel("Mirandés", "Mirandes Players", mirandes_matches)
+
+print("Algeciras finished")

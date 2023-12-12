@@ -40,18 +40,20 @@ public class FootballTeamEvolutionGraph {
         // Display the graph
         Viewer viewer = graph.display(true);
 
-        List<String[]> wholeFootballData = readFootballDataFromCSV("Graph_data_Barcelona_players.csv");
+        List<String[]> wholeFootballData = readFootballDataFromCSV("../Football_team_evolution_graph_data/Graph_data_Cultural_Leonesa_Players.csv");
 
         String[] prevColumnNames = new String[0];
 
-        for (var year = 1970; year < 2023; year++){
+        for (var year = 1970; year < 2022; year++){
 
-            System.out.println("Year: " + year + ", Max Year: " + (year + 0));
+            System.out.println("Year: " + year + ", Max Year: " + (year + 1));
 
-            List<String[]> footballData = findPlayersPerYear(wholeFootballData, year, year + 0);
+            List<String[]> footballData = findPlayersPerYear(wholeFootballData, year, year + 1);
 
             // Find current players names/labels
             String[] columnNames = footballData.get(0);
+            footballData = findWonPlayers(footballData);
+
 
             // Remove useless Nodes/players
             for (int i = 0; i < prevColumnNames.length; i++){
@@ -62,7 +64,7 @@ public class FootballTeamEvolutionGraph {
                 }
 
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(23);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -79,7 +81,7 @@ public class FootballTeamEvolutionGraph {
                 }
 
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(23);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -89,15 +91,13 @@ public class FootballTeamEvolutionGraph {
                 node.setAttribute("ui.style", nodeLabelStyle);
             }
 
-            footballData = findWonPlayers(footballData);
-
             // Add edges to the graph
             for (int i = 0; i < columnNames.length; i++) {
                 String player1 = columnNames[i];
                 Node node1 = graph.getNode(player1);
 
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(23);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -113,8 +113,14 @@ public class FootballTeamEvolutionGraph {
 
                     if (existingEdge != null) {
                         // Edge already exists, modify it
-                        existingEdge.setAttribute("ui.label", String.valueOf(gamesPlayedTogether));
-                        existingEdge.setAttribute("ui.style", edgeLabelStyle);
+                        if (gamesPlayedTogether == 0){
+                            graph.removeEdge(existingEdge);
+                        }
+                        else{
+                            existingEdge.setAttribute("ui.label", String.valueOf(gamesPlayedTogether));
+                            existingEdge.setAttribute("ui.style", edgeLabelStyle);
+                        }
+                        
                     } else {
                         // Edge doesn't exist, add a new one
                         if (gamesPlayedTogether > 0) {
@@ -130,7 +136,7 @@ public class FootballTeamEvolutionGraph {
 
             // Pause for a short duration to observe the changes
             try {
-                Thread.sleep(2000);
+                Thread.sleep(23);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -44,11 +44,19 @@ public class FootballTeamEvolutionGraph {
 
         String[] prevColumnNames = new String[0];
 
+        List<Float> vdsList = new ArrayList<>();
+        List<Float> edsList = new ArrayList<>();
+        List<Integer> yearList = new ArrayList<>();
+
         for (var year = 1970; year < 2022; year++){
+            int removedNodesCount = 0;
+            int addedNodesCount = 0;
+            int removedEdgesCount = 0;
+            int addedEdgesCount = 0;
 
-            System.out.println("Year: " + year + ", Max Year: " + (year + 1));
+            System.out.println("Year: " + year + ", Max Year: " + (year + 0));
 
-            List<String[]> footballData = findPlayersPerYear(wholeFootballData, year, year + 1);
+            List<String[]> footballData = findPlayersPerYear(wholeFootballData, year, year + 0);
 
             // Find current players names/labels
             String[] columnNames = footballData.get(0);
@@ -64,12 +72,13 @@ public class FootballTeamEvolutionGraph {
                 }
 
                 try {
-                    Thread.sleep(23);
+                    Thread.sleep(1);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
                 graph.removeNode(playerName);
+                removedNodesCount += 1;
             }
 
             // Add nodes to the graph with player names as labels if not in previous generation
@@ -81,7 +90,7 @@ public class FootballTeamEvolutionGraph {
                 }
 
                 try {
-                    Thread.sleep(23);
+                    Thread.sleep(1);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -89,6 +98,13 @@ public class FootballTeamEvolutionGraph {
                 Node node = graph.addNode(playerName);
                 node.setAttribute("ui.label", playerName);
                 node.setAttribute("ui.style", nodeLabelStyle);
+                addedNodesCount += 1;
+            }
+
+            if (graph.getNodeCount()!=0){
+                yearList.add(year);
+                float vds = (float) (removedNodesCount + addedNodesCount) / graph.getNodeCount();
+                vdsList.add((float)vds);
             }
 
             // Add edges to the graph
@@ -97,7 +113,7 @@ public class FootballTeamEvolutionGraph {
                 Node node1 = graph.getNode(player1);
 
                 try {
-                    Thread.sleep(23);
+                    Thread.sleep(1);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -115,6 +131,7 @@ public class FootballTeamEvolutionGraph {
                         // Edge already exists, modify it
                         if (gamesPlayedTogether == 0){
                             graph.removeEdge(existingEdge);
+                            removedEdgesCount += 1;
                         }
                         else{
                             existingEdge.setAttribute("ui.label", String.valueOf(gamesPlayedTogether));
@@ -127,20 +144,49 @@ public class FootballTeamEvolutionGraph {
                             Edge newEdge = graph.addEdge(player1 + "-" + player2, node1, node2);
                             newEdge.setAttribute("ui.label", String.valueOf(gamesPlayedTogether));
                             newEdge.setAttribute("ui.style", edgeLabelStyle);
+                            addedEdgesCount += 1;
                         }
                     }
                 }
+            }
+
+            if (graph.getNodeCount()!=0){
+                float eds = (float) (removedEdgesCount + addedEdgesCount) / graph.getNodeCount();
+                edsList.add((float)eds);
             }
 
             prevColumnNames = columnNames;
 
             // Pause for a short duration to observe the changes
             try {
-                Thread.sleep(23);
+                Thread.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+
+        System.out.println("year_list = [");
+
+        for (int value : yearList) {
+            System.out.println(value+",");
+        }
+        System.out.println("]");
+
+
+        System.out.println("vds_list = [");
+
+        for (float value : vdsList) {
+            System.out.println(value+",");
+        }
+        System.out.println("]");
+
+
+        System.out.println("eds_list = [");
+
+        for (float value : edsList) {
+            System.out.println(value+",");
+        }
+        System.out.println("]");
 
         viewer.close();
     }

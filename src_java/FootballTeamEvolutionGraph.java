@@ -40,13 +40,15 @@ public class FootballTeamEvolutionGraph {
         // Display the graph
         Viewer viewer = graph.display(true);
 
-        List<String[]> wholeFootballData = readFootballDataFromCSV("../Football_team_evolution_graph_data/Graph_data_Cultural_Leonesa_Players.csv");
+        List<String[]> wholeFootballData = readFootballDataFromCSV("../Football_team_evolution_graph_data/Graph_data_Xerez_players.csv");
 
         String[] prevColumnNames = new String[0];
 
         List<Float> vdsList = new ArrayList<>();
         List<Float> edsList = new ArrayList<>();
         List<Integer> yearList = new ArrayList<>();
+
+        int edgeCount = 0;
 
         for (var year = 1970; year < 2022; year++){
             int removedNodesCount = 0;
@@ -103,7 +105,7 @@ public class FootballTeamEvolutionGraph {
 
             if (graph.getNodeCount()!=0){
                 yearList.add(year);
-                float vds = (float) (removedNodesCount + addedNodesCount) / graph.getNodeCount();
+                float vds = (float) (removedNodesCount + addedNodesCount) / (graph.getNodeCount()+removedNodesCount);
                 vdsList.add((float)vds);
             }
 
@@ -132,6 +134,7 @@ public class FootballTeamEvolutionGraph {
                         if (gamesPlayedTogether == 0){
                             graph.removeEdge(existingEdge);
                             removedEdgesCount += 1;
+                            edgeCount -= 1;
                         }
                         else{
                             existingEdge.setAttribute("ui.label", String.valueOf(gamesPlayedTogether));
@@ -145,13 +148,14 @@ public class FootballTeamEvolutionGraph {
                             newEdge.setAttribute("ui.label", String.valueOf(gamesPlayedTogether));
                             newEdge.setAttribute("ui.style", edgeLabelStyle);
                             addedEdgesCount += 1;
+                            edgeCount += 1;
                         }
                     }
                 }
             }
 
             if (graph.getNodeCount()!=0){
-                float eds = (float) (removedEdgesCount + addedEdgesCount) / graph.getNodeCount();
+                float eds = (float) (removedEdgesCount + addedEdgesCount) / (edgeCount + removedEdgesCount);
                 edsList.add((float)eds);
             }
 
